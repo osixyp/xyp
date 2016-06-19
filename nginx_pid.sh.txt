@@ -1,0 +1,10 @@
+#!/bin/bash
+nginxpid=`ps -C nginx --no-header |wc -l`
+if [ $nginxpid -eq 0 ];then
+   /etc/init.d/nginx restart
+      sleep 5
+        nginxpid=`ps -C nginx --no-header |wc -l`
+          if [ $nginxpid -eq 0 ];then
+              /etc/init.d/keepalived stop
+          fi
+fi

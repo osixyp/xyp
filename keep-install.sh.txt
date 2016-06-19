@@ -1,0 +1,15 @@
+#!/bin/bash
+tar -zvxf keepalived-1\[1\].1.17.tar.gz 
+yum -y install  kernel-devel
+ln -s /usr/src/kernels/2.6.18-164.el5-i686/ /usr/src/linux
+cd keepalived-1.1.17/
+yum install openssl-* -y
+./configure --prefix=/usr/local/keepalived
+make
+make install
+cp /usr/local/keepalived/etc/rc.d/init.d/keepalived /etc/init.d/
+cp /usr/local/keepalived/etc/sysconfig/keepalived /etc/sysconfig/
+mkdir -pv /etc/keepalived
+cp /usr/local/keepalived/etc/keepalived/keepalived.conf /etc/keepalived/
+ln -s /usr/local/keepalived/sbin/keepalived /sbin/
+service keepalived restart

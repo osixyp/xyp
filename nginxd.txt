@@ -1,0 +1,80 @@
+#!/bin/bash
+NGINX=/usr/local/nginx/sbin/nginx
+PID=/usr/local/nginx/logs/nginx.pid
+
+##fun
+START () {
+pstree -p |grep nginx > /dev/null 2>&1
+   if [ -f $PID ] && [ $? -eq 0 ]
+      then
+                        echo "Warnning: nginx already running"
+   else
+            
+               if [ -f $PID ];then
+                rm -rf $PID
+                fi
+     $NGINX
+##stdin OK
+             if [ $? -eq 0 ];then
+              echo -e "nginx start\t\t\t\t [\033[32m OK \033[0m]"
+             else
+               echo -e "nginx start\t\t\t\t [\033[31m Fail \033[0m]"
+             fi
+   fi
+}
+
+
+STOP () {
+pstree -p |grep nginx > /dev/null 2>&1
+if [ -f $PID ] && [ $? -eq 0 ]
+      then
+                       killall -s QUIT nginx
+#check
+                  if [ $? -eq 0 ];then
+                    echo -e "nginx stop\t\t\t\t [\033[32m OK \033[0m]"
+                  fi
+   else
+             rm -rf /usr/local/nginx/logs/nginx.pid > /dev/null 2>&1
+             echo -e "nginx stop\t\t\t\t [\033[31m Fail \033[0m]"
+   fi
+}
+
+
+RESTART () {
+STOP;sleep 1;START
+}
+
+
+RELOAD () {
+if [ -f $PID ] && [ $? -eq 0 ]
+      then
+          killall -s HUP $NGINX
+#reload check
+              if [ $? -eq 0 ];then
+                     echo -e "nginx reload\t\t\t\t [\033[32m OK \033[0m]"
+              fi
+else
+         echo "Warnning: nginx stop,please start nginx"
+fi
+}
+
+
+STATUS () {
+elinks http://localhost -dump > /dev/null 2>&1
+
+          if [ $? -eq 0 ];then
+             echo "nginx running..."
+          else
+             echo "nging stop"
+          fi
+}
+
+#main
+case $1 in
+start) START;;
+stop) STOP;;
+restart) RESTART;;
+reload) RELOAD;;
+status) STATUS;;
+*) echo "USAGE: AVGE is start|stop|restart|reload|status";;
+esac

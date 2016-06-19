@@ -1,0 +1,41 @@
+#!/bin/bash
+
+CP1=0
+CP2=0
+while :
+  do
+#tong
+     elinks http://192.168.1.244 -dump > /dev/null
+     if [ $? -eq 1 ] && [ $CP1 -eq 0 ]
+        then
+           sed -i '/192.168.1.244/s/^/#/' /etc/nginx.conf
+           /etc/init.d/nginx reload
+           CP1=1
+      fi
+#butong
+     elinks http://192.168.1.244 -dump > /dev/null
+     if [ $? -eq 0 ] && [ $CP1 -eq 1 ]
+        then
+            sed -i '/192.168.1.244/s/#//' /etc/nginx.conf
+            /etc/init.d/nginx reload
+            CP1=0
+     fi
+
+
+    elinks http://192.168.1.245 -dump > /dev/null
+    if [ $? -eq 1 ] && [ $CP2 -eq 0 ]
+        then
+          sed -i '/192.168.1.245/s/^/#/' /etc/nginx.conf
+          /etc/init.d/nginx reload
+          CP2=1
+    fi
+       elinks http://192.168.1.245 -dump > /dev/null
+     if [ $? -eq 0 ] && [ $CP2 -eq 1 ]
+        then
+            sed -i '/192.168.1.245/s/#//' /etc/nginx.conf
+            /etc/init.d/nginx reload
+            CP2=0
+     fi
+
+sleep 3
+done
